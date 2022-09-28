@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 
+using UnityEditor;
+
 using UnityEngine;
 
 using Random = UnityEngine.Random;
@@ -71,6 +73,20 @@ public class Miners : MonoBehaviour
         }
 
         Parallel.ForEach(miners, parallelOptions, miner => { miner.UpdateMiner(); });
+    }
+    
+    private void OnDrawGizmos()
+    {
+        if (map == null)
+            return;
+        
+        foreach (Node node in map)
+        {
+            Vector3 worldPosition = new Vector3(node.position.x, node.position.y, 0.0f);
+
+            Gizmos.color = node.state == Node.NodeState.Obstacle ? Color.red : Color.green;
+            Gizmos.DrawWireSphere(worldPosition, 0.2f);
+        }
     }
     #endregion
 

@@ -40,7 +40,7 @@ public class Miner : MonoBehaviour
 
         //Behaviours
         fsm.AddBehaviour((int)States.Idle, new Idle(fsm.SetFlag));
-        fsm.AddBehaviour((int)States.Mining, new Mine(fsm.SetFlag, onGetDeltaTime, OnEmptyMine), () => { fsm.SetFlag((int)Flags.OnAbruptReturn); });
+        fsm.AddBehaviour((int)States.Mining, new Mine(fsm.SetFlag, onGetDeltaTime, OnEmptyMine,StopMovement), () => { fsm.SetFlag((int)Flags.OnAbruptReturn); });
         fsm.AddBehaviour((int)States.GoToMine, new GoToMine(fsm.SetFlag, GetPos, GetPath, UpdateTarget, onGetMine, UpdateMine, RePath), () => { fsm.SetFlag((int)Flags.OnAbruptReturn); });
         fsm.AddBehaviour((int)States.GoToDeposit, new GoToDeposit(fsm.SetFlag, GetPos, GetPath, UpdateTarget, deposit, RePath));
         fsm.AddBehaviour((int)States.Resting, new AbruptReturn(fsm.SetFlag, onGetDeltaTime, GetPos, GetPath, UpdateTarget, deposit), () => { fsm.SetFlag((int)Flags.OnGoBackToWork); });
@@ -80,6 +80,11 @@ public class Miner : MonoBehaviour
         flockingMiners.UpdateTarget(newTarget);
     }
 
+    private void StopMovement()
+    {
+        flockingMiners.ToggleFlocking(false);
+    }
+    
     private Vector2 GetPos()
     {
         return currentPos;
