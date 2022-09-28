@@ -2,18 +2,19 @@ using UnityEngine;
 
 using UnityEditor;
 
-public class GameManager : Singleton<GameManager>
+public class GameManager : MonoBehaviour
 {
     #region EXPOSED_FIELDS
     public Miners miners;
-    public Vector2Int nodePos;
-    public int newWeight;
     #endregion
 }
 
 [CustomEditor(typeof(GameManager))]
 public class ObjectBuilderEditor : Editor
 {
+    private Vector2Int nodePos;
+    private int netWeight;
+
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -23,10 +24,13 @@ public class ObjectBuilderEditor : Editor
         {
             myScript.miners.SpawnMiner();
         }
+        
+        nodePos = EditorGUILayout.Vector2IntField("Node Pos", nodePos);
+        netWeight = EditorGUILayout.IntField("Weight", netWeight);
 
         if (GUILayout.Button("Update Weight"))
         {
-            myScript.miners.UpdateWeight(GameManager.Instance.nodePos, GameManager.Instance.newWeight);
+            myScript.miners.UpdateWeight(nodePos, netWeight);
         }
     }
 }
