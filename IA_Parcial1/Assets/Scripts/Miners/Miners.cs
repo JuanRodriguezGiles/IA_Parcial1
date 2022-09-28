@@ -107,8 +107,14 @@ public class Miners : MonoBehaviour
             if (map[i].position == nodePos)
             {
                 map[i].SetWeight(nodeWeight);
+                onUpdateWeight?.Invoke();
             }
         }
+    }
+
+    public void RandomWeight()
+    {
+        
     }
     #endregion
 
