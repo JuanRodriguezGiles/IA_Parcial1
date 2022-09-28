@@ -1000,7 +1000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minerSpawnPos: {x: 24, y: 24, z: 0}
-  minesCount: 5
+  minesCount: 15
   mapSize: {x: 50, y: 50}
   minesParent: {fileID: 291707455}
   wallsParent: {fileID: 1213967342}

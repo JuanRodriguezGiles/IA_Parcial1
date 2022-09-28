@@ -118,7 +118,7 @@ MonoBehaviour:
   maxSpeed: 5
   maxForce: 1
   checkRadius: 0.5
-  separationMultiplayer: 1.2
+  separationMultiplayer: 1
   cohesionMultiplayer: 1
   alignmentMultiplayer: 1
   velocity: {x: 0, y: 0}
