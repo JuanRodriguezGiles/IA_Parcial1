@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 
-using UnityEditor;
-
 using UnityEngine;
 
 using Random = UnityEngine.Random;
@@ -13,6 +11,7 @@ public class Miners : MonoBehaviour
 {
     #region EXPOSED_FIELDS
     [Header("Config")]
+    [SerializeField] private VoronoiHandler voronoiHandler;
     [SerializeField] private Vector3Int minerSpawnPos;
     [SerializeField] private int minesCount;
     [SerializeField] private Vector2Int mapSize;
@@ -47,11 +46,14 @@ public class Miners : MonoBehaviour
 
         InitBuildings();
         InitMap();
-
+        voronoiHandler.Config();
+        
         for (int i = 0; i < minesCount; i++)
         {
             SpawnMine();
         }
+
+        UpdateSectors();
     }
 
     private void Update()
@@ -165,8 +167,8 @@ public class Miners : MonoBehaviour
 
     private void SpawnMine()
     {
-        int x = Random.Range(0, 50);
-        int y = Random.Range(0, 50);
+        int x = Random.Range(1, NodeUtils.MapSize.x - 1);
+        int y = Random.Range(1, NodeUtils.MapSize.y - 1);
         Vector2Int pos = new Vector2Int(x, y);
 
         for (int i = 0; i < buildings.Count; i++)
@@ -198,6 +200,11 @@ public class Miners : MonoBehaviour
 
         return pos;
     }
+    
+    private Vector2Int GetMine(Vector2 minerPos)
+    {
+        return voronoiHandler.GetNearestMine(minerPos);
+    }
 
     private void OnEmptyMine(Vector2Int minePos)
     {
@@ -210,6 +217,7 @@ public class Miners : MonoBehaviour
                 buildings.Remove(pos);
                 Destroy(mines[i]);
                 mines.RemoveAt(i);
+                UpdateSectors();
                 break;
             }
         }
@@ -218,6 +226,16 @@ public class Miners : MonoBehaviour
     private Node[] GetMap()
     {
         return map;
+    }
+
+    private void UpdateSectors()
+    {
+        List<Vector2> minesPos = new List<Vector2>();
+        foreach (var mine in mines)
+        {
+            minesPos.Add(mine.transform.position);
+        }
+        voronoiHandler.UpdateSectors(minesPos);
     }
     #endregion
 }

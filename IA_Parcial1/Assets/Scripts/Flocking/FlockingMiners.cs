@@ -17,6 +17,7 @@ public class FlockingMiners : MonoBehaviour
     public float separationMultiplayer;
     public float cohesionMultiplayer;
     public float alignmentMultiplayer;
+    public float directionMultiplier;
 
     public Vector2 velocity;
     public Vector2 acceleration;
@@ -48,7 +49,7 @@ public class FlockingMiners : MonoBehaviour
         boids.Remove(this);
 
         if (boids.Any())
-            acceleration = Alignment(boids) * alignmentMultiplayer + Separation(boids) * separationMultiplayer + Cohesion(boids) * cohesionMultiplayer + DirectionToTarget();
+            acceleration = Alignment(boids) * alignmentMultiplayer + Separation(boids) * separationMultiplayer + Cohesion(boids) * cohesionMultiplayer + DirectionToTarget() * directionMultiplier;
         else
             acceleration = DirectionToTarget();
 

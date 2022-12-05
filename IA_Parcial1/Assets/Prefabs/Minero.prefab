@@ -117,10 +117,11 @@ MonoBehaviour:
   baseRotation: {x: 0, y: 0, z: 0}
   maxSpeed: 5
   maxForce: 1
-  checkRadius: 0.5
-  separationMultiplayer: 1
+  checkRadius: 0.2
+  separationMultiplayer: 1.2
   cohesionMultiplayer: 1
   alignmentMultiplayer: 1
+  directionMultiplier: 2
   velocity: {x: 0, y: 0}
   acceleration: {x: 0, y: 0}
 --- !u!58 &-7361362657765370475
@@ -138,4 +139,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.2

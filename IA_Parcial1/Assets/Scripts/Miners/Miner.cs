@@ -21,7 +21,7 @@ public class Miner : MonoBehaviour
     #endregion
 
     #region PUBLIC_METHODS
-    public void Init(Vector2Int deposit, Vector2 currentPos, Func<float> onGetDeltaTime, Func<Vector2Int> onGetMine, Action<Vector2Int> onEmptyMine, Func<Node[]> onGetMap, ref Action onUpdateWeight)
+    public void Init(Vector2Int deposit, Vector2 currentPos, Func<float> onGetDeltaTime, Func<Vector2,Vector2Int> onGetMine, Action<Vector2Int> onEmptyMine, Func<Node[]> onGetMap, ref Action onUpdateWeight)
     {
         pathfinding = new Pathfinding();
         this.currentPos = currentPos;

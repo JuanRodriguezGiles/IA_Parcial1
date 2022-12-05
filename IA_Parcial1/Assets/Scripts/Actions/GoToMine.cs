@@ -10,18 +10,18 @@ public class GoToMine : FSMAction
     private Action<Vector2Int> onUpdateTarget;
     private Action<Vector2Int> onUpdateMine;
     private readonly Func<Vector2> onGetPos;
-    private Func<Vector2Int> onGetMine;
+    private Func<Vector2,Vector2Int> onGetMine;
     private Func<bool> rePath;
 
     private Vector3 currentDestination;
     private List<Vector2Int> path;
     private Vector2Int mine;
-    private Vector2 miner;
+    private Vector2 minerPos;
     private int posIndex;
     #endregion
 
     #region CONSTRUCTOR
-    public GoToMine(Action<int> onSetFlag, Func<Vector2> onGetPos, Func<Vector2Int, Vector2Int, List<Vector2Int>> onGetPath, Action<Vector2Int> onUpdateTarget, Func<Vector2Int> onGetMine, Action<Vector2Int> onUpdateMine,
+    public GoToMine(Action<int> onSetFlag, Func<Vector2> onGetPos, Func<Vector2Int, Vector2Int, List<Vector2Int>> onGetPath, Action<Vector2Int> onUpdateTarget, Func<Vector2,Vector2Int> onGetMine, Action<Vector2Int> onUpdateMine,
         Func<bool> rePath)
     {
         this.onSetFlag = onSetFlag;
@@ -37,14 +37,14 @@ public class GoToMine : FSMAction
     #region OVERRIDE
     public override void Execute()
     {
-        miner = onGetPos.Invoke();
+        minerPos = onGetPos.Invoke();
 
         if (path == null)
         {
-            mine = onGetMine.Invoke();
+            mine = onGetMine.Invoke(minerPos);
             onUpdateMine?.Invoke(mine);
 
-            path = onGetPath.Invoke(new Vector2Int((int)miner.x, (int)miner.y), mine);
+            path = onGetPath.Invoke(new Vector2Int((int)minerPos.x, (int)minerPos.y), mine);
 
             posIndex = 0;
 
@@ -52,11 +52,11 @@ public class GoToMine : FSMAction
 
             onUpdateTarget?.Invoke(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
         }
-        else if (Vector2.Distance(currentDestination, miner) < 0.1f)
+        else if (Vector2.Distance(currentDestination, minerPos) < 0.1f)
         {
             if (rePath.Invoke())
             {
-                path = onGetPath.Invoke(new Vector2Int((int)miner.x, (int)miner.y), mine);
+                path = onGetPath.Invoke(new Vector2Int((int)minerPos.x, (int)minerPos.y), mine);
 
                 posIndex = 0;
 
