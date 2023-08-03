@@ -28,9 +28,9 @@ public class Sector
     #endregion
 
     #region PUBLIC_METHODS
-    public void AddSegment(Vector2 origin, Vector2 final)
+    public void AddSegment(Vector2 origin, Vector2 final, float weightOrigin, float weightFinal)
     {
-        segments.Add(new Segment(origin, final));
+        segments.Add(new Segment(origin, final, weightOrigin, weightFinal));
     }
 
     public void DrawSegments()
@@ -73,6 +73,9 @@ public class Sector
                 //OriginPoint represents the starting point of the segment
                 float maxDistance = Vector2.Distance(intersectionPoint, segments[i].originPoint);
 
+                // float maxDistance = Vector2.Distance(intersectionPoint, segments[i].mediatrix) * segments[i].weightOrigin +
+                //     Vector2.Distance(intersectionPoint, segments[j].mediatrix) * segments[j].weightEnd;
+                
                 bool isBorder = true;
                 for (int k = 0; k < segments.Count; k++)
                 {
@@ -86,6 +89,15 @@ public class Sector
                         isBorder = false;
                         break;
                     }
+                    
+                    // float distanceToSegment = Vector2.Distance(intersectionPoint, segments[k].mediatrix);
+                    // float distanceThreshold = (segments[k].weightOrigin + segments[k].weightEnd) * 0.5f;
+                    //
+                    // if (distanceToSegment < distanceThreshold * 0.5f)
+                    // {
+                    //     isBorder = false;
+                    //     break;
+                    // }
                 }
 
                 //If still true

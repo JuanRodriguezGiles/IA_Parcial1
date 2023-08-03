@@ -237,10 +237,11 @@ public class Miners : MonoBehaviour
 
     private void UpdateSectors()
     {
-        List<Vector2> minesPos = new List<Vector2>();
+        List<(Vector2, float)> minesPos = new List<(Vector2, float)>();
         foreach (var mine in mines)
         {
-            minesPos.Add(mine.transform.position);
+            float weight = Random.Range(1, 6);
+            minesPos.Add((mine.transform.position, weight));
         }
         voronoiHandler.UpdateSectors(minesPos);
     }

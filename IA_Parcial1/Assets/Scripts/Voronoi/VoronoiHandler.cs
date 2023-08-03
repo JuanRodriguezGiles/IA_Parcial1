@@ -37,7 +37,7 @@ public class VoronoiHandler : MonoBehaviour
         edges.Add(new Edge(new Vector2(NodeUtils.MapSize.x, 0f), DIR.DOWN));
     }
 
-    public void UpdateSectors(List<Vector2> mines)
+    public void UpdateSectors(List<(Vector2,float)> mines)
     {
         sectors.Clear();
         if (mines.Count == 0) return;
@@ -45,7 +45,7 @@ public class VoronoiHandler : MonoBehaviour
         //Add mine sectors
         foreach (var mine in mines)
         {
-            sectors.Add(new Sector(mine));
+            sectors.Add(new Sector(mine.Item1));
         }
 
         //Add segment limits
@@ -61,7 +61,7 @@ public class VoronoiHandler : MonoBehaviour
             {
                 if (i == j) continue;
 
-                sectors[i].AddSegment(mines[i], mines[j]);
+                sectors[i].AddSegment(mines[i].Item1, mines[j].Item1, mines[i].Item2, mines[j].Item2);
             }
         }
 

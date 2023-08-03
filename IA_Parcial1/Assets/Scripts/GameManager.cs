@@ -19,7 +19,8 @@ public class GameManager : MonoBehaviour
     public void UpdateWeight()
     {
         nodePos = new Vector2Int(Convert.ToInt32(xInput.text), Convert.ToInt32(yInput.text));
-
+        netWeight = Convert.ToInt32(weightInput.text);
+            
         miners.UpdateWeight(nodePos, netWeight);
     }
     
