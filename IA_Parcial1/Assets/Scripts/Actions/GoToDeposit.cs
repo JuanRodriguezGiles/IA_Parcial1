@@ -40,6 +40,12 @@ public class GoToDeposit : FSMAction
             path = onGetPath.Invoke(new Vector2Int((int)miner.x, (int)miner.y), deposit);
 
             posIndex = 0;
+            
+            if (posIndex > path.Count - 1)
+            {
+                path = null;
+                return;
+            }
 
             currentDestination = new Vector3(path[posIndex].x, path[posIndex].y, 0);
 

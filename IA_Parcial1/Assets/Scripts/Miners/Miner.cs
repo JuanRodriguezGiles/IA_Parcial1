@@ -3,14 +3,16 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+using Random = UnityEngine.Random;
+
 public class Miner : MonoBehaviour
 {
     #region PRIVATE_FIELDS
     private Action<Vector2Int> onEmptyMine;
     private FlockingMiners flockingMiners;
     private Pathfinding pathfinding;
-    private Func<Node[]> onGetMap;
     private FSM fsm;
+    private Node[] map;
     #endregion
 
     #region EXPOSED_FIELDS
@@ -21,8 +23,10 @@ public class Miner : MonoBehaviour
     #endregion
 
     #region PUBLIC_METHODS
-    public void Init(Vector2Int deposit, Vector2Int rest, Vector2 currentPos, Func<float> onGetDeltaTime, Func<Vector2, Vector2Int> onGetMine, Action<Vector2Int> onEmptyMine, Func<Node[]> onGetMap, ref Action onUpdateWeight)
+    public void Init(Vector2Int deposit, Vector2Int rest, Vector2 currentPos, Func<float> onGetDeltaTime, Func<Vector2, Vector2Int> onGetMine, Action<Vector2Int> onEmptyMine, ref Action onUpdateWeight, List<Vector2Int> buildings, List<Vector2Int> mines)
     {
+        InitMap(buildings, mines);
+        
         pathfinding = new Pathfinding();
         this.currentPos = currentPos;
         //--------------------------------------------------------------------------------
@@ -53,7 +57,6 @@ public class Miner : MonoBehaviour
         flockingMiners.Init(UpdatePos, GetPos);
 
         this.onEmptyMine = onEmptyMine;
-        this.onGetMap = onGetMap;
 
         onUpdateWeight = OnUpdateWeight;
     }
@@ -66,6 +69,19 @@ public class Miner : MonoBehaviour
     public void ExitMiner()
     {
         fsm.Exit();
+    }
+    
+    public void UpdateWeight(Vector2Int nodePos, int nodeWeight)
+    {
+        for (int i = 0; i < map.Length; i++)
+        {
+            if (map[i].position == nodePos)
+            {
+                map[i].SetWeight(nodeWeight);
+                updatePath = true;
+                return;
+            }
+        }
     }
     #endregion
 
@@ -94,18 +110,19 @@ public class Miner : MonoBehaviour
 
     private List<Vector2Int> GetPath(Vector2Int origin, Vector2Int destination)
     {
-        Node[] map = onGetMap.Invoke();
         updatePath = false;
         return pathfinding.GetPath(map, map[NodeUtils.PositionToIndex(origin)], map[NodeUtils.PositionToIndex(destination)]);
     }
 
-    private void UpdateMine(Vector2Int minePos)
+    public void UpdateMine(Vector2Int minePos)
     {
         currentMine = minePos;
+        updatePath = true;
     }
 
     private void OnEmptyMine()
     {
+        updatePath = true;
         onEmptyMine?.Invoke(currentMine);
     }
 
@@ -117,6 +134,32 @@ public class Miner : MonoBehaviour
     private bool RePath()
     {
         return updatePath;
+    }
+
+    private void InitMap(List<Vector2Int> buildings, List<Vector2Int> mines)
+    {
+        map = new Node[50 * 50];
+        NodeUtils.MapSize = new Vector2Int(50, 50);
+        int id = 0;
+
+        for (int i = 0; i < 50; i++)
+        {
+            for (int j = 0; j < 50; j++)
+            {
+                map[id] = new Node(id, new Vector2Int(j, i));
+                map[id].SetWeight(Random.Range(1, 6));
+
+                for (int k = 0; k < buildings.Count; k++)
+                {
+                    if (map[id].position == buildings[k] && !mines.Contains(buildings[k])) 
+                    {
+                        map[id].state = Node.NodeState.Obstacle;
+                    }
+                }
+
+                id++;
+            }
+        }
     }
     #endregion
 }

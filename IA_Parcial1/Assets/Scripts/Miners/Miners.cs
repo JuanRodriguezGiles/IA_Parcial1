@@ -36,13 +36,14 @@ public class Miners : MonoBehaviour
     private Vector2Int depositPos;
     private Vector2Int restPos;
     private float deltaTime;
+    private List<Vector2Int> minesPos = new List<Vector2Int>();
     [SerializeField] private Node[] map;
     #endregion
 
     #region UNITY_CALLS
     private void Start()
     {
-        parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 12 };
+        parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 6 };
 
         depositPos = new Vector2Int((int)depositGo.transform.position.x, (int)depositGo.transform.position.y);
         restPos = new Vector2Int((int)restGo.transform.position.x, (int)restGo.transform.position.y);
@@ -95,21 +96,14 @@ public class Miners : MonoBehaviour
     {
         var go = Instantiate(minerGo, minerSpawnPos, Quaternion.identity, transform);
         var miner = go.GetComponent<Miner>();
-        miner.Init(depositPos, restPos, miner.transform.position, GetDeltaTime, GetMine, OnEmptyMine, GetMap, ref onUpdateWeight);
+        miner.Init(depositPos, restPos, miner.transform.position, GetDeltaTime, GetMine, OnEmptyMine, ref onUpdateWeight, buildings, minesPos);
 
         miners.Add(miner);
     }
 
     public void UpdateWeight(Vector2Int nodePos, int nodeWeight)
     {
-        for (int i = 0; i < map.Length; i++)
-        {
-            if (map[i].position == nodePos)
-            {
-                map[i].SetWeight(nodeWeight);
-                onUpdateWeight?.Invoke();
-            }
-        }
+        Parallel.ForEach(miners, parallelOptions, miner => { miner.UpdateWeight(nodePos, nodeWeight); });
     }
 
     public void RandomWeight()
@@ -146,11 +140,11 @@ public class Miners : MonoBehaviour
     {
         map = new Node[mapSize.x * mapSize.y];
         NodeUtils.MapSize = new Vector2Int(mapSize.x, mapSize.y);
-        var id = 0;
+        int id = 0;
 
-        for (var i = 0; i < mapSize.x; i++)
+        for (int i = 0; i < mapSize.x; i++)
         {
-            for (var j = 0; j < mapSize.y; j++)
+            for (int j = 0; j < mapSize.y; j++)
             {
                 map[id] = new Node(id, new Vector2Int(j, i));
                 map[id].SetWeight(Random.Range(1, 6));
@@ -188,6 +182,7 @@ public class Miners : MonoBehaviour
 
         mines.Add(go);
         buildings.Add(pos);
+        minesPos.Add(pos);
     }
 
     private float GetDeltaTime()
@@ -218,9 +213,18 @@ public class Miners : MonoBehaviour
             if (minePos == pos)
             {
                 buildings.Remove(pos);
+                minesPos.Remove(pos);
                 Destroy(mines[i]);
                 mines.RemoveAt(i);
                 UpdateSectors();
+                
+                Parallel.ForEach(miners, parallelOptions, miner =>
+                {
+                    if (miner.currentMine == minePos)
+                    {
+                        miner.UpdateMine(GetMine());
+                    }
+                });
                 break;
             }
         }

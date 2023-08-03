@@ -26,7 +26,7 @@ public class FlockingMiners : MonoBehaviour
     #region PRIVATE_FIELDS
     private Action<Vector2> onUpdatePos;
     private Func<Vector2> onGetPos;
-    private bool enabled = false;
+    private bool flockingEnabled = false;
     private Vector2 target;
     #endregion
 
@@ -40,7 +40,7 @@ public class FlockingMiners : MonoBehaviour
 
     private void Update()
     {
-        if (!enabled) return;
+        if (!flockingEnabled) return;
 
         Vector2 currentPos = onGetPos.Invoke();
         
@@ -64,6 +64,7 @@ public class FlockingMiners : MonoBehaviour
     #endregion
 
     #region PRIVATE_METHODS
+    //Average boids velocities and then apply steering to match the desired alignment direction
     private Vector2 Alignment(IEnumerable<FlockingMiners> boids)
     {
         Vector2 velocity = Vector2.zero;
@@ -79,6 +80,8 @@ public class FlockingMiners : MonoBehaviour
         return steer;
     }
 
+    
+    //Average position of neighboring boids and steers them towards that average position
     private Vector2 Cohesion(IEnumerable<FlockingMiners> boids)
     {
         Vector2 sumPositions = Vector2.zero;
@@ -93,6 +96,7 @@ public class FlockingMiners : MonoBehaviour
         return Steer(direction.normalized * maxSpeed);
     }
 
+    //Calculates the separation behavior for boids by steering away from nearby boids
     private Vector2 Separation(IEnumerable<FlockingMiners> boids)
     {
         Vector2 direction = Vector2.zero;
@@ -109,6 +113,7 @@ public class FlockingMiners : MonoBehaviour
         return Steer(direction.normalized * maxSpeed);
     }
 
+    //Calculates steering force for boid while considering the current velocity and limiting the maximum force applied
     private Vector2 Steer(Vector2 desired)
     {
         var steer = desired - velocity;
@@ -157,7 +162,7 @@ public class FlockingMiners : MonoBehaviour
 
     public void ToggleFlocking(bool enabled)
     {
-        this.enabled = enabled;
+        this.flockingEnabled = enabled;
     }
     #endregion
 }

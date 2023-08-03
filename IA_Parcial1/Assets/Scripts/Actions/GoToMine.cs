@@ -47,6 +47,12 @@ public class GoToMine : FSMAction
             path = onGetPath.Invoke(new Vector2Int((int)minerPos.x, (int)minerPos.y), mine);
 
             posIndex = 0;
+            
+            if (posIndex > path.Count - 1)
+            {
+                path = null;
+                return;
+            }
 
             currentDestination = new Vector3(path[posIndex].x, path[posIndex].y, 0);
 
@@ -56,6 +62,9 @@ public class GoToMine : FSMAction
         {
             if (rePath.Invoke())
             {
+                mine = onGetMine.Invoke(minerPos);
+                onUpdateMine?.Invoke(mine);
+                
                 path = onGetPath.Invoke(new Vector2Int((int)minerPos.x, (int)minerPos.y), mine);
 
                 posIndex = 0;

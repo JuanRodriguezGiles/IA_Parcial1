@@ -30,6 +30,7 @@ public class VoronoiHandler : MonoBehaviour
     #region PUBLIC_METHODS
     public void Config()
     {
+        //Configure initial values of voronoi diagram by creating 4 edges that represent it's boundaries (left, up, right, down)
         edges.Add(new Edge(new Vector2(0, 0), DIR.LEFT));
         edges.Add(new Edge(new Vector2(0f, NodeUtils.MapSize.y), DIR.UP));
         edges.Add(new Edge(new Vector2(NodeUtils.MapSize.x, NodeUtils.MapSize.y), DIR.RIGHT));
@@ -41,16 +42,19 @@ public class VoronoiHandler : MonoBehaviour
         sectors.Clear();
         if (mines.Count == 0) return;
 
+        //Add mine sectors
         foreach (var mine in mines)
         {
             sectors.Add(new Sector(mine));
         }
 
+        //Add segment limits
         foreach (var mineSector in sectors)
         {
             mineSector.AddSegmentLimits(edges);
         }
 
+        //Connect mines
         for (int i = 0; i < mines.Count; i++)
         {
             for (int j = 0; j < mines.Count; j++)
@@ -61,6 +65,7 @@ public class VoronoiHandler : MonoBehaviour
             }
         }
 
+        //Set intersections  for each sector
         foreach (var mineSector in sectors)
         {
             mineSector.SetIntersections();

@@ -8,7 +8,7 @@ public class Mine : FSMAction
     private Action stopFlocking;
 
     private float currentMiningTime = 0;
-    private int mineUses = 10;
+    private int mineUses = 2;
 
     private const float miningTime = 2.0f;
     #endregion
@@ -43,7 +43,7 @@ public class Mine : FSMAction
 
             if (mineUses == 0)
             {
-                mineUses = 10;
+                mineUses = 2;
                 onEmptyMine?.Invoke();
             }
             onSetFlag?.Invoke((int)Flags.OnFullInventory);

@@ -26,6 +26,7 @@ public class Edge
     #region PUBLIC_METHODS
     public Vector2 GetPosition(Vector2 pos)
     {
+        //Get absoulte distance by calcultaing abs difference, used to determine shift amount
         float distanceX = Mathf.Abs(Mathf.Abs(pos.x) - Mathf.Abs(origin.x)) * 2f;
         float distanceY = Mathf.Abs(Mathf.Abs(pos.y) - Mathf.Abs(origin.y)) * 2f;
 
@@ -48,6 +49,7 @@ public class Edge
                 break;
         }
 
+        //Return pos at toher end of edge
         return pos;
     }
     #endregion

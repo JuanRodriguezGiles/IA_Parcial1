@@ -55,47 +55,50 @@ public class Sector
     {
         intersections.Clear();
 
-        //Recorrer todos los segmentos (sin comparar con si mismo)
+        //Iterate all segments (without comparing with itself)
         for (int i = 0; i < segments.Count; i++)
         {
             for (int j = 0; j < segments.Count; j++)
             {
                 if (i == j) continue;
 
-                //Calcular punto de interesccion entre las mediatrices 
+                //Calculate the intersection point between the mediatrices of the two segments 
+                //Mediatrices == lines perpendicular to the segments that pass through their midpoints
                 Vector2 intersectionPoint = GetIntersection(segments[i], segments[j]);
 
-                //Si ya esta en la lista ignorar
+                //If intersection is already on list skip
                 if (intersections.Contains(intersectionPoint)) continue;
 
-                //Distancia entre la mina actual y el punto de interseccion
+                //Calculate maximum distance between intersectionPoint and the origin point of segment
+                //OriginPoint represents the starting point of the segment
                 float maxDistance = Vector2.Distance(intersectionPoint, segments[i].originPoint);
 
-                //Reviso si es un punto valido para definir fronteras
                 bool isBorder = true;
                 for (int k = 0; k < segments.Count; k++)
                 {
-                    //maxDistance es la distancia entre la interseccion y la mina i y, como son mediatrices, la otra mina equidistante seria la j
                     if (k == i || k == j) continue;
 
                     //Comparar si la distancia entre la intersección de las mediatrices y todas las demás minas es más pequeña que la distancia maxima 
+                    //Checks if the distance between the intersectionPoint and the endpoint of  segment is less than the maximum distance
                     if (IsPositionCloser(intersectionPoint, segments[k].endPoint, maxDistance))
                     {
+                        //intersectionPoint is closer to another mine's segment than to the current segment 
                         isBorder = false;
                         break;
                     }
                 }
 
+                //If still true
                 if (isBorder)
                 {
-                    intersections.Add(intersectionPoint);
-                    segments[i].intersections.Add(intersectionPoint);
-                    segments[j].intersections.Add(intersectionPoint);
+                    intersections.Add(intersectionPoint); //Set vaild border point
+                    segments[i].intersections.Add(intersectionPoint); //Add to i intersection
+                    segments[j].intersections.Add(intersectionPoint); //Add to j intersection
                 }
             }
         }
         
-        //Remuevo los segmentos que no representan a la frontera de mi region
+        //If they dont have 2 intersections they are not part of theb order
         segments.RemoveAll((segment) => segment.intersections.Count != 2);
 
         SortIntersections();
@@ -119,21 +122,30 @@ public class Sector
 
         if (points == null) return false;
 
+        //Last point
         Vector2 endPoint = points[^1];
+        //Extract x and y
         float endX = endPoint.x;
         float endY = endPoint.y;
 
+        //Iterate all points
         for (int i = 0; i < points.Length; i++)
         {
+            //Store x and y of current endPoint
             float startX = endX; 
             float startY = endY;
 
+            //Update endpoint to current point in loop
             endPoint = points[i];
 
+            //Extract x and y
             endX = endPoint.x; 
             endY = endPoint.y;
 
-            inside ^= (endY > point.y ^ startY > point.y) && ((point.x - endX) < (point.y - endY) * (startX - endX) / (startY - endY));
+            //bitwise exclusive OR -> returns true if the two operands have different bool values
+            //endY > point.y ^ startY > point.y -> checks if the point is between the two Y coords of the line
+            //point.x - endX < (point.y - endY) * (startX - endX) / (startY - endY) -> evaluates if point is in right side of segment
+            inside ^= endY > point.y ^ startY > point.y && point.x - endX < (point.y - endY) * (startX - endX) / (startY - endY);
         }
 
         return inside;
@@ -155,11 +167,13 @@ public class Sector
             intersectionPoints.Add(new IntersectionPoint(intersections[i]));
         }
 
+        //Init values
         float minX = intersectionPoints[0].position.x;
         float maxX = intersectionPoints[0].position.x;
         float minY = intersectionPoints[0].position.y;
         float maxY = intersectionPoints[0].position.y;
 
+        //Iterate all intersectionPoints to find min and max values
         for (int i = 0; i < intersections.Count; i++)
         {
             if (intersectionPoints[i].position.x < minX) minX = intersectionPoints[i].position.x;
@@ -168,23 +182,26 @@ public class Sector
             if (intersectionPoints[i].position.y > maxY) maxY = intersectionPoints[i].position.y;
         }
 
+        //Calculate center of the sector using the min/max values
         Vector2 center = new Vector2(minX + (maxX - minX) / 2, minY + (maxY - minY) / 2);
 
         for (int i = 0; i < intersectionPoints.Count; i++)
         {
             Vector2 pos = intersectionPoints[i].position;
 
-            //Angulo entre interseccion y centro
+            //Calculate the angle between the position of the current intersection point and the center of the sector using the arccosine function
+            //Determines the angle in radians between the positive x-axis and the line segment connecting the pos and the center.
             intersectionPoints[i].angle = Mathf.Acos((pos.x - center.x) / Mathf.Sqrt(Mathf.Pow(pos.x - center.x, 2f) + Mathf.Pow(pos.y - center.y, 2f)));
-
             
             if (pos.y > center.y)
             {
+                //Intersection point is in the lower half of the sector
+                //Adjust angle to place the points in clockwise order around the center instead of counter clockwise order
                 intersectionPoints[i].angle = Mathf.PI + Mathf.PI - intersectionPoints[i].angle;
             }
         }
 
-        //sort por angulo para asimilar un circulo
+        //Sort the points by angle o have a list of intersection points that represents a polygon surrounding the sector
         intersectionPoints = intersectionPoints.OrderBy(p => p.angle).ToList();
 
         intersections.Clear();
@@ -196,12 +213,15 @@ public class Sector
 
     private void SetPointsInSector()
     {
+        //+1 To repeat first intersection point at end of array
         points = new Vector3[intersections.Count + 1];
 
         for (int i = 0; i < intersections.Count; i++)
         {
             points[i] = new Vector3(intersections[i].x, intersections[i].y, 0f);
         }
+        
+        //Close sector polygon forming a "loop". Represents convex polygon
         points[intersections.Count] = points[0];
     }
 
@@ -215,7 +235,7 @@ public class Sector
         Vector2 p3 = seg2.mediatrix;
         Vector2 p4 = seg2.mediatrix + seg2.direction * NodeUtils.MapSize.magnitude;
 
-        if (((p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x)) == 0) return intersection;
+        if ((p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x) == 0) return intersection;
 
         intersection.x = ((p1.x * p2.y - p1.y * p2.x) * (p3.x - p4.x) - (p1.x - p2.x) * (p3.x * p4.y - p3.y * p4.x)) / ((p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x));
         intersection.y = ((p1.x * p2.y - p1.y * p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x * p4.y - p3.y * p4.x)) / ((p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x));

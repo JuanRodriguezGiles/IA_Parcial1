@@ -17,7 +17,9 @@ public class Segment
         this.originPoint = originPoint;
         this.endPoint = endPoint;
 
+        //Get midpoint of segment
         mediatrix = new Vector2((originPoint.x + endPoint.x) / 2, (originPoint.y + endPoint.y) / 2);
+        //Get direction vector by getting perpendicular vector from origin and end point
         direction = Vector2.Perpendicular(new Vector2(endPoint.x - originPoint.x, endPoint.y - originPoint.y));
 
         intersections = new List<Vector2>();
