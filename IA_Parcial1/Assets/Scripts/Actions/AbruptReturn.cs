@@ -7,12 +7,12 @@ public class AbruptReturn : FSMAction
 {
     #region PRIVATE_FIELDS
     private readonly Func<Vector2Int, Vector2Int, List<Vector2Int>> onGetPath;
-    private Action<Vector2Int> onUpdateTarget;
+    private readonly Action<Vector2Int> onUpdateTarget;
     private readonly Func<Vector2> onGetPos;
-    private Func<float> onGetDeltaTime;
+    private Action stopFlocking;
 
     private Vector3 currentDestination;
-    private readonly Vector2Int deposit;
+    private readonly Vector2Int rest;
     private List<Vector2Int> path;
     private Vector2 miner;
     private int posIndex;
@@ -20,14 +20,14 @@ public class AbruptReturn : FSMAction
     #endregion
 
     #region CONSTRUCTOR
-    public AbruptReturn(Action<int> onSetFlag, Func<float> onGetDeltaTime, Func<Vector2> onGetPos, Func<Vector2Int, Vector2Int, List<Vector2Int>> onGetPath, Action<Vector2Int> onUpdateTarget, Vector2Int deposit)
+    public AbruptReturn(Action<int> onSetFlag, Func<Vector2> onGetPos, Func<Vector2Int, Vector2Int, List<Vector2Int>> onGetPath, Action<Vector2Int> onUpdateTarget, Action stopFlocking, Vector2Int rest)
     {
         this.onSetFlag = onSetFlag;
-        this.onGetDeltaTime = onGetDeltaTime;
         this.onGetPos = onGetPos;
         this.onGetPath = onGetPath;
         this.onUpdateTarget = onUpdateTarget;
-        this.deposit = deposit;
+        this.stopFlocking = stopFlocking;
+        this.rest = rest;
     }
     #endregion
 
@@ -40,7 +40,7 @@ public class AbruptReturn : FSMAction
 
         if (path == null)
         {
-            path = onGetPath.Invoke(new Vector2Int((int)miner.x, (int)miner.y), deposit);
+            path = onGetPath.Invoke(new Vector2Int((int)miner.x, (int)miner.y), rest);
 
             posIndex = 0;
 
@@ -55,7 +55,9 @@ public class AbruptReturn : FSMAction
             if (posIndex >= path.Count - 1)
             {
                 path = null;
-                reached = true;
+                reached = false;
+                stopFlocking?.Invoke();
+                onSetFlag?.Invoke((int)Flags.OnIdle);
                 return;
             }
 

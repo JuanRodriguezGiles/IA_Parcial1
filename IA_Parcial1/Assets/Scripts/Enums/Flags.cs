@@ -6,6 +6,7 @@ public enum Flags
     OnEmptyMine,
     OnAbruptReturn,
     OnGoBackToWork,
+    OnIdle,
     
     _Count
 }

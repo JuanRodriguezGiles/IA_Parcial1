@@ -4,7 +4,7 @@ public enum States
     GoToMine,
     GoToDeposit,
     Idle,
-    Resting,
+    GoToRest,
     
     _Count
 }

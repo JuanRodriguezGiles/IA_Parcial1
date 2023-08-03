@@ -743,6 +743,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e6bd8ded9a35b84ab40e501f6a56566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alpha: 0
 --- !u!1 &922894704
 GameObject:
   m_ObjectHideFlags: 0
@@ -1014,6 +1015,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1760122453 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7618025556983166969, guid: 7ec01068b6f32a344a0b6c8c7146e4cc, type: 3}
+  m_PrefabInstance: {fileID: 7618025556630870553}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1996668016
 GameObject:
   m_ObjectHideFlags: 0
@@ -1052,6 +1058,7 @@ MonoBehaviour:
   depositGo: {fileID: 1500384719}
   minerGo: {fileID: 4248180729916858057, guid: 2b3ccf5280d8a4c4ab362462e26070b5, type: 3}
   mineGo: {fileID: 3711067333260917421, guid: f021ef43a7d469c40b00428ca4c498de, type: 3}
+  restGo: {fileID: 1760122453}
   buildings: []
   mines: []
   map: []

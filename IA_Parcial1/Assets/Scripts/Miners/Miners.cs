@@ -22,6 +22,7 @@ public class Miners : MonoBehaviour
     [SerializeField] private GameObject depositGo;
     [SerializeField] private GameObject minerGo;
     [SerializeField] private GameObject mineGo;
+    [SerializeField] private GameObject restGo;
     
     [Header("Data")]
     [SerializeField] private List<Vector2Int> buildings = new();
@@ -33,6 +34,7 @@ public class Miners : MonoBehaviour
     private ParallelOptions parallelOptions;
     private Action onUpdateWeight;
     private Vector2Int depositPos;
+    private Vector2Int restPos;
     private float deltaTime;
     [SerializeField] private Node[] map;
     #endregion
@@ -43,6 +45,7 @@ public class Miners : MonoBehaviour
         parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 12 };
 
         depositPos = new Vector2Int((int)depositGo.transform.position.x, (int)depositGo.transform.position.y);
+        restPos = new Vector2Int((int)restGo.transform.position.x, (int)restGo.transform.position.y);
 
         InitBuildings();
         InitMap();
@@ -97,7 +100,7 @@ public class Miners : MonoBehaviour
     {
         var go = Instantiate(minerGo, minerSpawnPos, Quaternion.identity, transform);
         var miner = go.GetComponent<Miner>();
-        miner.Init(depositPos, miner.transform.position, GetDeltaTime, GetMine, OnEmptyMine, GetMap, ref onUpdateWeight);
+        miner.Init(depositPos, restPos, miner.transform.position, GetDeltaTime, GetMine, OnEmptyMine, GetMap, ref onUpdateWeight);
 
         miners.Add(miner);
     }
