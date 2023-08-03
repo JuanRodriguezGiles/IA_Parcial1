@@ -1,36 +1,35 @@
-using UnityEngine;
+using System;
 
-using UnityEditor;
+using TMPro;
+
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     #region EXPOSED_FIELDS
     public Miners miners;
+    public TMP_InputField weightInput;
+    public TMP_InputField xInput;
+    public TMP_InputField yInput;
     #endregion
-}
 
-[CustomEditor(typeof(GameManager))]
-public class ObjectBuilderEditor : Editor
-{
     private Vector2Int nodePos;
     private int netWeight;
 
-    public override void OnInspectorGUI()
+    public void UpdateWeight()
     {
-        DrawDefaultInspector();
+        nodePos = new Vector2Int(Convert.ToInt32(xInput.text), Convert.ToInt32(yInput.text));
 
-        GameManager myScript = (GameManager)target;
-        if (GUILayout.Button("Spawn Miner"))
-        {
-            myScript.miners.SpawnMiner();
-        }
-        
-        nodePos = EditorGUILayout.Vector2IntField("Node Pos", nodePos);
-        netWeight = EditorGUILayout.IntField("Weight", netWeight);
+        miners.UpdateWeight(nodePos, netWeight);
+    }
+    
+    public void SpawnMiner()
+    {
+        miners.SpawnMiner();
+    }
 
-        if (GUILayout.Button("Update Weight"))
-        {
-            myScript.miners.UpdateWeight(nodePos, netWeight);
-        }
+    public void AbruptExit()
+    {
+        miners.AbruptExit();
     }
 }

@@ -118,10 +118,10 @@ MonoBehaviour:
   maxSpeed: 5
   maxForce: 1
   checkRadius: 0.2
-  separationMultiplayer: 1.2
-  cohesionMultiplayer: 1
-  alignmentMultiplayer: 1
-  directionMultiplier: 2
+  separationMultiplayer: 1
+  cohesionMultiplayer: 0.1
+  alignmentMultiplayer: 0.1
+  directionMultiplier: 1
   velocity: {x: 0, y: 0}
   acceleration: {x: 0, y: 0}
 --- !u!58 &-7361362657765370475

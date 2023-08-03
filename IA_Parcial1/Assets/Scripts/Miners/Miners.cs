@@ -72,11 +72,6 @@ public class Miners : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            Parallel.ForEach(miners, parallelOptions, miner => { miner.ExitMiner(); });
-        }
-
         Parallel.ForEach(miners, parallelOptions, miner => { miner.UpdateMiner(); });
     }
     
@@ -120,6 +115,11 @@ public class Miners : MonoBehaviour
     public void RandomWeight()
     {
         
+    }
+
+    public void AbruptExit()
+    {
+        Parallel.ForEach(miners, parallelOptions, miner => { miner.ExitMiner(); });
     }
     #endregion
 
